@@ -3,12 +3,13 @@
 using BehaviorTrees.Collections;
 using BehaviorTrees.Engine;
 using System.Drawing;
+using System.Threading;
 
 namespace BehaviorTrees.Example1
 {
 	public static class Example1
 	{
-		public static void Create()
+		public static void Main()
 		{
 			var exampleBT = new TreeBuilder<Node>(new Sequence())
 				.AddWithChild(new Loop(3))
@@ -22,8 +23,23 @@ namespace BehaviorTrees.Example1
 				.Up()
 			.ToTree();
 
-			Engine.Engine.Instance.LoadScene(new List<Entity> { new Entity("Actor1") },
-				new BTScript("MovingTest", exampleBT));
+
+			Entity entity = new Entity();
+			exampleBT.Owner = entity;
+			ExecutingStatus status = ExecutingStatus.Success;
+
+			Timer timer = new Timer(new TimerCallback((object state) => 
+			{
+				status = exampleBT.Execute();
+			}));
+			timer.Change(0, 10000);
+
+			while(true)
+			{
+			}
+
+			//Engine.Engine.Instance.LoadScene(new List<Entity> { new Entity("Actor1") },
+			//	new BTScript("MovingTest", exampleBT));
 		}
 	}
 }
